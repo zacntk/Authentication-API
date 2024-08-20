@@ -1,9 +1,13 @@
 package com.example.demo.database.repositories;
 
-public class UserRepository {
+import java.util.Optional;
 
-	public UserRepository() {
-		// TODO Auto-generated constructor stub
-	}
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import com.example.demo.database.entities.User;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
 }
