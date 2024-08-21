@@ -74,29 +74,29 @@ Welcome to the Authentication API project! This powerful and secure API is metic
 - Success (201 Created)
 ```json
 {
-    "message": "User sign up successfully",
-    "status": "success"
+    "status": "success",
+    "message": "User sign up successfully"
 }
 ```
 - Invalid email address (400 Bad Request)
 ```json
 {
-    "message": "Email is already in use",
     "status": "error"
+    "message": "Email is already in use"
 }
 ```
 - Password is weak (400 Bad Request)
 ```json
 {
-    "message": "Password is weak",
-    "status": "error"
+    "status": "error",
+    "message": "Password is weak"
 }
 ```
 - Email is already in use (409 Conflict)
 ```json
 {
-    "message": "Email is already in use",
-    "status": "error"
+    "status": "error",
+    "message": "Email is already in use"
 }
 ```
 
@@ -126,23 +126,23 @@ Welcome to the Authentication API project! This powerful and secure API is metic
 - Invalid password (401 Unauthorized)
 ```json
 {
-    "message": "Invalid password",
-    "status": "error"
+    "status": "error",
+    "message": "Invalid password"
 }
 ```
 
 - Email not found (401 Unauthorized)
 ```json
 {
-    "message": "Email not found",
-    "status": "error"
+    "status": "error",
+    "message": "Email not found"
 }
 ```
 
 ### 3. Access Data With Access Token
 **Method:** `Get`
 
-**Endpoint:** `{path}/api/v1/auth/data`
+**Endpoint:** `{path}/api/v1/auth`
 
 **Authorization:**
 - **Type:** Bearer Token
@@ -157,25 +157,26 @@ Authorization: Bearer <your_access_token>
 - Success (200 OK)
 ```json
 {
-    "role": "User",
-    "email": "example@example.com"
+    "status": "success",
+    "message": "Token is valid"
 }
 ```
 
 - Don't Have Authorization Header (400 Bad Request)
 ```json
 {
-    "timestamp": "2024-08-20T07:32:28.753+00:00",
+    "timestamp": "2024-08-21T05:12:22.502+00:00",
     "status": 400,
     "error": "Bad Request",
-    "path": "/api/v1/auth/data"
+    "path": "/api/v1/auth"
 }
 ```
 
 - Invalid Token (400 Bad Request)
 ```json
 {
-    "message": "Token is not valid"
+    "status": "error",
+    "message": "Token is invalid"
 }
 ```
 
@@ -205,7 +206,7 @@ Authorization: Bearer <your_refresh_token>
 - Don't Have Authorization Header (400 Bad Request)
 ```json
 {
-    "timestamp": "2024-08-20T07:41:29.268+00:00",
+    "timestamp": "2024-08-21T05:14:00.205+00:00",
     "status": 400,
     "error": "Bad Request",
     "path": "/api/v1/auth/refresh"
@@ -215,7 +216,8 @@ Authorization: Bearer <your_refresh_token>
 - Invalid Token (400 Bad Request)
 ```json
 {
-    "message": "Token is not valid"
+    "status": "error",
+    "message": "Token is invalid"
 }
 ```
 
