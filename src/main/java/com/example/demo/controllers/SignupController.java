@@ -47,7 +47,7 @@ public class SignupController {
     }
 
     @PostMapping("/api/v1/auth/signup")
-    public ResponseEntity<Map<String, String>> addUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, String>> signupUser(@RequestBody User user) {
         Map<String, String> response = new HashMap<>();
         
         if (checkEmailvalidity(user.getEmail())) {

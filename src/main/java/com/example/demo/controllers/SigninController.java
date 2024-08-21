@@ -27,7 +27,7 @@ public class SigninController {
     
     // Sign In
     @PostMapping("/api/v1/auth/signin")
-    public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, String>> signinUser(@RequestBody User user) {
         Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
 
         Map<String, String> response = new HashMap<>();

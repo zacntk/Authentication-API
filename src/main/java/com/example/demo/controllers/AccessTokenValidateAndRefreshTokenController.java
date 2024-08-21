@@ -17,39 +17,31 @@ import com.example.demo.database.repositories.UserRepository;
 import com.example.demo.services.TokenService;
 
 @RestController
-public class AccessDataAndRefreshTokenController {
+public class AccessTokenValidateAndRefreshTokenController {
 
     private final TokenService tokenService = new TokenService();
 
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("api/v1/auth/data")
-    public ResponseEntity<Map<String, String>> getData(@RequestHeader("Authorization") String token) {
+    @GetMapping("api/v1/auth")
+    public ResponseEntity<Map<String, String>> AccessTokenValidate(@RequestHeader("Authorization") String token) {
         String accessToken = token.replace("Bearer ", "");
         Map<String, String> response = new HashMap<>();
 
         if (tokenService.verifyAccessToken(accessToken)) {
-            Long userId = tokenService.getUserIdFromToken(accessToken);
-            Optional<User> userOpt = userRepository.findById(userId);
-
-            if (userOpt.isPresent()) {
-                User user = userOpt.get();
-                response.put("email", user.getEmail());
-                response.put("role", user.getRole());
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            } else {
-                response.put("error", "User not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
+        	response.put("status", "success");
+            response.put("message", "Token is valid");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
-        response.put("message", "Token is not valid");
+        response.put("status", "error");
+        response.put("message", "Token is invalid");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @PostMapping("api/v1/auth/refresh")
-    public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Map<String, String>> RefreshToken(@RequestHeader("Authorization") String token) {
         String refreshToken = token.replace("Bearer ", "");
         Map<String, String> response = new HashMap<>();
 
@@ -62,12 +54,13 @@ public class AccessDataAndRefreshTokenController {
                 response.put("refresh_token", tokenService.generateRefreshToken(existingUser));
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
-                response.put("error", "User not found");
+            	response.put("status", "error");
+                response.put("message", "User not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         }
-
-        response.put("error", "Token is not valid");
+        response.put("status", "error");
+        response.put("message", "Token is invalid");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }
