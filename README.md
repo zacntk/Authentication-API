@@ -139,7 +139,7 @@ Welcome to the Authentication API project! This powerful and secure API is metic
 }
 ```
 
-### 3. Access Data With Access Token
+### 3. Validate Access Token
 **Method:** `Get`
 
 **Endpoint:** `{path}/api/v1/auth`
