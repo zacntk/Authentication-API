@@ -16,77 +16,85 @@ import com.example.demo.database.entities.User;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class TokenService {
-	static Dotenv dotenv = Dotenv.load(); // Load .env file
+    static Dotenv dotenv = Dotenv.load(); // Load .env file
 
-	private static final String ACCESS_TOKEN_SECRET = dotenv.get("ACCESS_TOKEN_SECRET");
-	private static final String REFRESH_TOKEN_SECRET = dotenv.get("REFRESH_TOKEN_SECRET");
+    private static final String ACCESS_TOKEN_SECRET = dotenv.get("ACCESS_TOKEN_SECRET");
+    private static final String REFRESH_TOKEN_SECRET = dotenv.get("REFRESH_TOKEN_SECRET");
 
-	public String generateAccessToken(Optional<User> existingUser) {
-		Map<String, Object> header = new HashMap<>();
-		header.put("alg", "HS256");
-		header.put("typ", "JWT");
+    public String generateAccessToken(Optional<User> existingUser) {
+        User user = existingUser.orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-		Map<String, Object> payload = new HashMap<>();
-		payload.put("Id", existingUser.get().getId());
-		payload.put("email", existingUser.get().getEmail());
+        Map<String, Object> header = new HashMap<>();
+        header.put("alg", "HS256");
+        header.put("typ", "JWT");
 
-		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		calendar.add(Calendar.SECOND, 60*10);
-		Date expirationTime = calendar.getTime();
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", user.getId());
+        payload.put("roles", user.getRole());
+        payload.put("email", user.getEmail());
 
-		return JWT.create().withHeader(header).withPayload(payload).withExpiresAt(expirationTime)
-				.sign(Algorithm.HMAC256(ACCESS_TOKEN_SECRET));
-	}
+        Date expirationTime = getExpirationDate(10 * 60); // 10 minutes
 
-	public String generateRefreshToken(Optional<User> existingUser) {
-		Map<String, Object> header = new HashMap<>();
-		header.put("alg", "HS256");
-		header.put("typ", "JWT");
+        return JWT.create()
+                .withHeader(header)
+                .withPayload(payload)
+                .withExpiresAt(expirationTime)
+                .sign(Algorithm.HMAC256(ACCESS_TOKEN_SECRET));
+    }
 
-		Map<String, Object> payload = new HashMap<>();
-		payload.put("Id", existingUser.get().getId());
-		payload.put("email", existingUser.get().getEmail());
+    public String generateRefreshToken(Optional<User> existingUser) {
+        User user = existingUser.orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		calendar.add(Calendar.SECOND, 3600 * 24);
-		Date expirationTime = calendar.getTime();
+        Map<String, Object> header = new HashMap<>();
+        header.put("alg", "HS256");
+        header.put("typ", "JWT");
 
-		return JWT.create().withHeader(header).withPayload(payload).withExpiresAt(expirationTime)
-				.sign(Algorithm.HMAC256(REFRESH_TOKEN_SECRET));
-	}
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("id", user.getId());
+        payload.put("roles", user.getRole());
+        payload.put("email", user.getEmail());
 
-	public boolean verifyAccessToken(String token) {
-	    try {
-	        Algorithm algorithm = Algorithm.HMAC256(ACCESS_TOKEN_SECRET);
-	        JWTVerifier verifier = JWT.require(algorithm).build();
-	        verifier.verify(token);
-	        return true; // Token is valid
-	    } catch (Exception e) {
-	        return false; // Token is invalid
-	    }
-	}
+        Date expirationTime = getExpirationDate(24 * 3600); // 24 hours
 
-	public boolean verifyRefreshToken(String token) {
-	    try {
-	        Algorithm algorithm = Algorithm.HMAC256(REFRESH_TOKEN_SECRET);
-	        JWTVerifier verifier = JWT.require(algorithm).build();
-	        verifier.verify(token);
-	        return true; // Token is valid
-	    } catch (Exception e) {
-	        return false; // Token is invalid
-	    }
-	}
+        return JWT.create()
+                .withHeader(header)
+                .withPayload(payload)
+                .withExpiresAt(expirationTime)
+                .sign(Algorithm.HMAC256(REFRESH_TOKEN_SECRET));
+    }
 
+    public boolean verifyAccessToken(String token) {
+        return verifyToken(token, ACCESS_TOKEN_SECRET);
+    }
 
-	public Long getUserIdFromToken(String token) {
+    public boolean verifyRefreshToken(String token) {
+        return verifyToken(token, REFRESH_TOKEN_SECRET);
+    }
+
+    public Long getUserIdFromToken(String token) {
         try {
             DecodedJWT decodedJWT = JWT.decode(token);
-            return decodedJWT.getClaim("Id").asLong(); // Extract user ID from token
+            return decodedJWT.getClaim("id").asLong(); // Extract user ID from token (consistent with generation)
         } catch (Exception e) {
-            // Handle token parsing errors
             e.printStackTrace();
             return null;
         }
     }
 
+    private boolean verifyToken(String token, String secret) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            verifier.verify(token);
+            return true; // Token is valid
+        } catch (Exception e) {
+            return false; // Token is invalid
+        }
+    }
+
+    private Date getExpirationDate(int seconds) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.add(Calendar.SECOND, seconds);
+        return calendar.getTime();
+    }
 }

@@ -17,7 +17,7 @@ import com.example.demo.database.repositories.UserRepository;
 import com.example.demo.services.TokenService;
 
 @RestController
-public class AccessTokenValidateAndRefreshTokenController {
+public class ValidateAccessTokenAndRefreshTokenController {
 
     private final TokenService tokenService = new TokenService();
 
@@ -25,13 +25,14 @@ public class AccessTokenValidateAndRefreshTokenController {
     private UserRepository userRepository;
 
     @GetMapping("api/v1/auth")
-    public ResponseEntity<Map<String, String>> AccessTokenValidate(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Map<String, String>> validateAccessToken(@RequestHeader("Authorization") String token) {
         String accessToken = token.replace("Bearer ", "");
         Map<String, String> response = new HashMap<>();
 
         if (tokenService.verifyAccessToken(accessToken)) {
-        	response.put("status", "success");
+            response.put("status", "success");
             response.put("message", "Token is valid");
+            //
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
@@ -41,7 +42,7 @@ public class AccessTokenValidateAndRefreshTokenController {
     }
 
     @PostMapping("api/v1/auth/refresh")
-    public ResponseEntity<Map<String, String>> RefreshToken(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Authorization") String token) {
         String refreshToken = token.replace("Bearer ", "");
         Map<String, String> response = new HashMap<>();
 
@@ -54,7 +55,7 @@ public class AccessTokenValidateAndRefreshTokenController {
                 response.put("refresh_token", tokenService.generateRefreshToken(existingUser));
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
-            	response.put("status", "error");
+                response.put("status", "error");
                 response.put("message", "User not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
