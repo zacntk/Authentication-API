@@ -109,7 +109,7 @@ Welcome to the Authentication API project! This powerful and secure API is metic
 ```json
 {
   "email": "example@example.com",
-  "password": "example1234*"
+  "password": "Example1234*"
 }
 ```
 
