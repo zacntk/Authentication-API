@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.database.entities.User;
@@ -17,6 +18,7 @@ import com.example.demo.database.repositories.UserRepository;
 import com.example.demo.services.TokenService;
 
 @RestController
+@RequestMapping("/v1/auth")
 public class SigninController {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -26,7 +28,7 @@ public class SigninController {
     UserRepository userRepository;
     
     // Sign In
-    @PostMapping("/v1/auth/signin")
+    @PostMapping("/signin")
     public ResponseEntity<Map<String, String>> signinUser(@RequestBody User user) {
         Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
 

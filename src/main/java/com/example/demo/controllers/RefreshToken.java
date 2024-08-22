@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.database.entities.User;
@@ -16,6 +17,7 @@ import com.example.demo.database.repositories.UserRepository;
 import com.example.demo.services.TokenService;
 
 @RestController
+@RequestMapping("/v1/auth")
 public class RefreshToken {
 
     private final TokenService tokenService = new TokenService();
@@ -23,7 +25,7 @@ public class RefreshToken {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/v1/auth/refresh")
+    @PostMapping("/refresh")
     public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Authorization") String token) {
         String refreshToken = token.replace("Bearer ", "");
         Map<String, String> response = new HashMap<>();

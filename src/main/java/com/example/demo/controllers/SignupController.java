@@ -13,12 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.database.entities.User;
 import com.example.demo.database.repositories.UserRepository;
 
 @RestController
+@RequestMapping("/v1/auth")
 public class SignupController {
 
     @Autowired
@@ -46,7 +48,7 @@ public class SignupController {
         return hasDigit && hasLower && hasUpper && specialChar && (passwordLength >= 8);
     }
 
-    @PostMapping("/v1/auth/signup")
+    @PostMapping("/signup")
     public ResponseEntity<Map<String, String>> signupUser(@RequestBody User user) {
         Map<String, String> response = new HashMap<>();
         
