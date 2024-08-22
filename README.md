@@ -119,8 +119,8 @@ Welcome to the Authentication API project! This powerful and secure API is metic
 {
     "status": "success",
     "message": "User sign in successfully.",
-    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6MTAzLCJlbWFpbCI6ImV4YW1wbGVAZXhhbXBsZS5jb20iLCJleHAiOjE3MjQxNDE1ODl9.bMpSAv5Ct5YlsCKZY0LVbRvVyPgqe6O_F3_F6r3Zmjg",
-    "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6MTAzLCJlbWFpbCI6ImV4YW1wbGVAZXhhbXBsZS5jb20iLCJleHAiOjE3MjQyMjQzODl9.HRdaazw7b4j_hRE8gHuqJGEUi6GkcfVgxD_dKwkojnk"
+    "access_token": <access_token>
+    "refresh_token": <refresh_token>
 }
 ```
 - Invalid password (401 Unauthorized)
@@ -198,8 +198,8 @@ Authorization: Bearer <your_refresh_token>
 - Success (200 OK)
 ```json
 {
-    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6MTAzLCJlbWFpbCI6ImV4YW1wbGVAZXhhbXBsZS5jb20iLCJleHAiOjE3MjQxNDMyNjF9.-oqRqksEHtOZl6JbjwS-VFqBTTHKD-INWIhnYzVZY9Q",
-    "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6MTAzLCJlbWFpbCI6ImV4YW1wbGVAZXhhbXBsZS5jb20iLCJleHAiOjE3MjQyMjYwNjF9.56XDHYx3e6Rz4Kn7uqxHydXgYpBBiSXMmCq0fq9j1wA"
+    "access_token": <access_token>
+    "refresh_token": <refresh_token>
 }
 ```
 
@@ -210,6 +210,106 @@ Authorization: Bearer <your_refresh_token>
     "status": 400,
     "error": "Bad Request",
     "path": "/api/v1/auth/refresh"
+}
+```
+
+- Invalid Token (400 Bad Request)
+```json
+{
+    "status": "error",
+    "message": "Token is invalid"
+}
+```
+
+### 5. Change Email
+**Method:** `Post`
+
+**Endpoint:** `{path}/v1/auth/changeEmail`
+
+**Authorization:**
+- **Type:** Bearer Token
+- **Token:** Your access token received from the sign-in process.
+
+**Headers:**
+```http
+Authorization: Bearer <your_access_token>
+```
+
+**Request Body:**
+```json
+{
+  "newEmail": "newExample@example.com",
+  "password": "Example1234*"
+}
+```
+
+**Response Body:**
+- Success (200 OK)
+```json
+{
+    "status": "success",
+    "message": "Email changed successfully",
+    "access_token": <access_token>,
+    "refresh_token": <refresh_token>
+}
+```
+
+- Don't Have Authorization Header (400 Bad Request)
+```json
+{
+    "timestamp": "2024-08-22T07:10:54.471+00:00",
+    "status": 400,
+    "error": "Bad Request",
+    "path": "/v1/auth/changeEmail"
+}
+```
+
+- Invalid Token (400 Bad Request)
+```json
+{
+    "status": "error",
+    "message": "Token is invalid"
+}
+```
+
+### 6. Change Password
+**Method:** `Post`
+
+**Endpoint:** `{path}/v1/auth/changePassword`
+
+**Authorization:**
+- **Type:** Bearer Token
+- **Token:** Your access token received from the sign-in process.
+
+**Headers:**
+```http
+Authorization: Bearer <your_access_token>
+```
+
+**Request Body:**
+```json
+{
+  "oldPassword": "Example1234*",
+  "newPassword": "newExample1234*"
+}
+```
+
+**Response Body:**
+- Success (200 OK)
+```json
+{
+    "status": "success",
+    "message": "Password changed successfully"
+}
+```
+
+- Don't Have Authorization Header (400 Bad Request)
+```json
+{
+    "timestamp": "2024-08-22T07:12:32.447+00:00",
+    "status": 400,
+    "error": "Bad Request",
+    "path": "/v1/auth/changePassword"
 }
 ```
 
