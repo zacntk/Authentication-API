@@ -71,10 +71,10 @@ public class TokenService {
         return verifyToken(token, REFRESH_TOKEN_SECRET);
     }
 
-    public Long getUserIdFromToken(String token) {
+    public String getUserEmailFromToken(String token) {
         try {
             DecodedJWT decodedJWT = JWT.decode(token);
-            return decodedJWT.getClaim("id").asLong(); // Extract user ID from token (consistent with generation)
+            return decodedJWT.getClaim("email").asString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

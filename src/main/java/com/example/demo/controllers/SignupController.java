@@ -46,7 +46,7 @@ public class SignupController {
         return hasDigit && hasLower && hasUpper && specialChar && (passwordLength >= 8);
     }
 
-    @PostMapping("/api/v1/auth/signup")
+    @PostMapping("/v1/auth/signup")
     public ResponseEntity<Map<String, String>> signupUser(@RequestBody User user) {
         Map<String, String> response = new HashMap<>();
         
