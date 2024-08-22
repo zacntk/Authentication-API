@@ -44,10 +44,12 @@ Welcome to the Authentication API project! This powerful and secure API is metic
     spring.jpa.open-in-view=false
     ```
 4. **Set Access Token Secret And Refresh Token Secret **
-    Open the `token.env` file and update the following properties to match your `Access Token Secret` and `Refresh Token Secret`:
+    Open the `token.env` file and update the following properties to match your `Access Token Secret`, `Refresh Token Secret`, `Issuer` and `Audience`:
    ```properties
     ACCESS_TOKEN_SECRET={YourAccessTokenSecret}
     REFRESH_TOKEN_SECRET={YourRefreshTokenSecret}
+    ISSUER={YourAppName}
+    AUDIENCE={YourAppAudience}
     ```
 
    
