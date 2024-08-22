@@ -222,7 +222,7 @@ Authorization: Bearer <your_refresh_token>
 ```
 
 ### 5. Change Email
-**Method:** `Post`
+**Method:** `Put`
 
 **Endpoint:** `{path}/v1/auth/changeEmail`
 
@@ -273,7 +273,7 @@ Authorization: Bearer <your_access_token>
 ```
 
 ### 6. Change Password
-**Method:** `Post`
+**Method:** `Put`
 
 **Endpoint:** `{path}/v1/auth/changePassword`
 
