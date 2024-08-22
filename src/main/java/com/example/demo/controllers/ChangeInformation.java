@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,12 +27,11 @@ public class ChangeInformation {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final TokenService tokenService = new TokenService();
-    private final TokenService jwt = new TokenService();
     
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/changeEmail")
+    @PutMapping("/changeEmail")
     public ResponseEntity<Map<String, String>> changeEmail(@RequestHeader("Authorization") String token,
                                                           @Validated @RequestBody ChangeEmailRequest changeEmailRequest) {
         String accessToken = token.replace("Bearer ", "");
@@ -56,8 +55,8 @@ public class ChangeInformation {
 
                     response.put("status", "success");
                     response.put("message", "Email changed successfully");
-                    response.put("access_token", jwt.generateAccessToken(existingUser));
-                	response.put("refresh_token", jwt.generateRefreshToken(existingUser));
+                    response.put("access_token", tokenService.generateAccessToken(existingUser));
+                	response.put("refresh_token", tokenService.generateRefreshToken(existingUser));
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 } else {
                     response.put("status", "error");
@@ -76,7 +75,7 @@ public class ChangeInformation {
         }
     }
 
-    @PostMapping("/changePassword")
+    @PutMapping("/changePassword")
     public ResponseEntity<Map<String, String>> changePassword(@RequestHeader("Authorization") String token,
                                                               @Validated @RequestBody ChangePasswordRequest changePasswordRequest) {
         String accessToken = token.replace("Bearer ", "");
