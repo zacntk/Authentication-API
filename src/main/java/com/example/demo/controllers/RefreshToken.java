@@ -36,7 +36,6 @@ public class RefreshToken {
 
             if (existingUser.isPresent()) {
                 response.put("access_token", tokenService.generateAccessToken(existingUser));
-                response.put("refresh_token", tokenService.generateRefreshToken(existingUser));
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
                 response.put("status", "error");
