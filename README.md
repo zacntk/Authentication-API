@@ -321,6 +321,62 @@ Authorization: Bearer <your_access_token>
 }
 ```
 
+### 6. Delete User
+**Method:** `Delete`
+
+**Endpoint:** `{path}/v1/auth/deleteUser`
+
+**Authorization:**
+- **Type:** Bearer Token
+- **Token:** Your access token received from the sign-in process.
+
+**Headers:**
+```http
+Authorization: Bearer <your_access_token>
+```
+
+**Request Body:**
+```json
+{
+  "email": "example@example.com",
+  "password": "Example1234*"
+}
+```
+
+**Response Body:**
+- Success (200 OK)
+```json
+{
+    "status": "success",
+    "message": "User deleted successfully"
+}
+```
+
+- User Or Password Incorrect (401 Unauthorized)
+```json
+{
+    "status": "error",
+    "message": "Incorrect email or password"
+}
+```
+
+- Don't Have Authorization Header (400 Bad Request)
+```json
+{
+    "timestamp": "2024-08-22T07:12:32.447+00:00",
+    "status": 400,
+    "error": "Bad Request",
+    "path": "/v1/auth/changePassword"
+}
+```
+
+- Invalid Token (400 Bad Request)
+```json
+{
+    "status": "error",
+    "message": "Token is invalid"
+}
+```
 ---
 
 🙌 Thank you for your interest in my project! 🙌
