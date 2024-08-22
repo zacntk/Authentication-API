@@ -16,17 +16,15 @@ import com.example.demo.database.entities.User;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class TokenService {
-    static Dotenv dotenv = Dotenv.load(); // Load .env file
+    static Dotenv dotenv = Dotenv.load();
 
     private static final String ACCESS_TOKEN_SECRET = dotenv.get("ACCESS_TOKEN_SECRET");
     private static final String REFRESH_TOKEN_SECRET = dotenv.get("REFRESH_TOKEN_SECRET");
+    private static final String ISSUER = dotenv.get("APP_NAME");
+    private static final String AUDIENCE = dotenv.get("APP_AUDIENCE");
 
     public String generateAccessToken(Optional<User> existingUser) {
         User user = existingUser.orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        Map<String, Object> header = new HashMap<>();
-        header.put("alg", "HS256");
-        header.put("typ", "JWT");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("id", user.getId());
@@ -36,7 +34,9 @@ public class TokenService {
         Date expirationTime = getExpirationDate(10 * 60); // 10 minutes
 
         return JWT.create()
-                .withHeader(header)
+                .withIssuer(ISSUER)
+                .withAudience(AUDIENCE)
+                .withSubject(String.valueOf(user.getId()))
                 .withPayload(payload)
                 .withExpiresAt(expirationTime)
                 .sign(Algorithm.HMAC256(ACCESS_TOKEN_SECRET));
@@ -44,10 +44,6 @@ public class TokenService {
 
     public String generateRefreshToken(Optional<User> existingUser) {
         User user = existingUser.orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        Map<String, Object> header = new HashMap<>();
-        header.put("alg", "HS256");
-        header.put("typ", "JWT");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("id", user.getId());
@@ -57,7 +53,9 @@ public class TokenService {
         Date expirationTime = getExpirationDate(24 * 3600); // 24 hours
 
         return JWT.create()
-                .withHeader(header)
+                .withIssuer(ISSUER)
+                .withAudience(AUDIENCE)
+                .withSubject(String.valueOf(user.getId()))
                 .withPayload(payload)
                 .withExpiresAt(expirationTime)
                 .sign(Algorithm.HMAC256(REFRESH_TOKEN_SECRET));
@@ -73,8 +71,11 @@ public class TokenService {
 
     public String getUserEmailFromToken(String token) {
         try {
-            DecodedJWT decodedJWT = JWT.decode(token);
-            return decodedJWT.getClaim("email").asString();
+            if (verifyAccessToken(token)) {
+                DecodedJWT decodedJWT = JWT.decode(token);
+                return decodedJWT.getClaim("email").asString();
+            }
+            return null; // token ไม่ถูกต้อง
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -84,11 +85,14 @@ public class TokenService {
     private boolean verifyToken(String token, String secret) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            JWTVerifier verifier = JWT.require(algorithm).build();
+            JWTVerifier verifier = JWT.require(algorithm)
+                .withIssuer(ISSUER)
+                .withAudience(AUDIENCE)
+                .build();
             verifier.verify(token);
-            return true; // Token is valid
+            return true;
         } catch (Exception e) {
-            return false; // Token is invalid
+            return false;
         }
     }
 
