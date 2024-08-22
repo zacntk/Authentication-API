@@ -12,7 +12,7 @@ Welcome to the Authentication API project! This powerful and secure API is metic
 - [x] **Enhanced Password Requirements**
   - Enforces a minimum password length of 8 characters, including at least one uppercase letter, one number, and one special character.
 
-- [ ] **Password and Email Management**
+- [x] **Password and Email Management**
   - Enable users to securely update their email addresses and passwords.
 
 - [x] **JSON Web Token (JWT) Protection**
