@@ -60,7 +60,7 @@ Welcome to the Authentication API project! This powerful and secure API is metic
 ### 1. Sign Up
 **Method:** `Post`
 
-**Endpoint:** `{path}/api/v1/auth/signup`
+**Endpoint:** `{path}/v1/auth/signup`
 
 **Request Body:**
 ```json
@@ -103,7 +103,7 @@ Welcome to the Authentication API project! This powerful and secure API is metic
 ### 2. Sign In
 **Method:** `Post`
 
-**Endpoint:** `{path}/api/v1/auth/signin`
+**Endpoint:** `{path}/v1/auth/signin`
 
 **Request Body:**
 ```json
@@ -142,7 +142,7 @@ Welcome to the Authentication API project! This powerful and secure API is metic
 ### 3. Validate Access Token
 **Method:** `Get`
 
-**Endpoint:** `{path}/api/v1/auth`
+**Endpoint:** `{path}/v1/auth/validate`
 
 **Authorization:**
 - **Type:** Bearer Token
@@ -183,7 +183,7 @@ Authorization: Bearer <your_access_token>
 ### 4. Refresh Access Token With Refresh Token
 **Method:** `Post`
 
-**Endpoint:** `{path}/api/v1/auth/refresh`
+**Endpoint:** `{path}/v1/auth/refresh`
 
 **Authorization:**
 - **Type:** Bearer Token
