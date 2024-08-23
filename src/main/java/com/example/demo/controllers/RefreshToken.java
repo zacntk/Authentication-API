@@ -29,7 +29,6 @@ public class RefreshToken {
     public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Authorization") String token) {
         String refreshToken = token.replace("Bearer ", "");
         Map<String, String> response = new HashMap<>();
-        System.out.println("Pass");
         
         if (tokenService.verifyRefreshToken(refreshToken)) {
         	Long currentUserId = tokenService.getUserIdFromToken(refreshToken);
