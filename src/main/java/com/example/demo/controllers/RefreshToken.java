@@ -29,10 +29,11 @@ public class RefreshToken {
     public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Authorization") String token) {
         String refreshToken = token.replace("Bearer ", "");
         Map<String, String> response = new HashMap<>();
-
+        System.out.println("Pass");
+        
         if (tokenService.verifyRefreshToken(refreshToken)) {
-            String userEmail = tokenService.getUserEmailFromToken(refreshToken);
-            Optional<User> existingUser = userRepository.findByEmail(userEmail);
+        	Long currentUserId = tokenService.getUserIdFromToken(refreshToken);
+            Optional<User> existingUser = userRepository.findById(currentUserId);
 
             if (existingUser.isPresent()) {
                 response.put("access_token", tokenService.generateAccessToken(existingUser));

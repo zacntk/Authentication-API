@@ -38,8 +38,8 @@ public class ChangeInformation {
         Map<String, String> response = new HashMap<>();
 
         if (tokenService.verifyAccessToken(accessToken)) {
-            String currentUserEmail = tokenService.getUserEmailFromToken(accessToken);
-            Optional<User> existingUser = userRepository.findByEmail(currentUserEmail);
+            Long currentUserId = tokenService.getUserIdFromToken(accessToken);
+            Optional<User> existingUser = userRepository.findById(currentUserId);
 
             if (existingUser.isPresent()) {
                 Optional<User> userWithNewEmail = userRepository.findByEmail(changeEmailRequest.getNewEmail());
@@ -82,8 +82,8 @@ public class ChangeInformation {
         Map<String, String> response = new HashMap<>();
 
         if (tokenService.verifyAccessToken(accessToken)) {
-            String userEmail = tokenService.getUserEmailFromToken(accessToken);
-            Optional<User> existingUser = userRepository.findByEmail(userEmail);
+        	Long currentUserId = tokenService.getUserIdFromToken(accessToken);
+            Optional<User> existingUser = userRepository.findById(currentUserId);
 
             if (existingUser.isPresent()) {
                 if (passwordEncoder.matches(changePasswordRequest.getOldPassword(), existingUser.get().getPassword())) {

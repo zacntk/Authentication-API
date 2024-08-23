@@ -38,8 +38,8 @@ public class DeleteUser {
 	    Map<String, String> response = new HashMap<>();
 
 	    if (tokenService.verifyAccessToken(accessToken)) {
-	        String currentUserEmail = tokenService.getUserEmailFromToken(accessToken);
-	        Optional<User> existingUser = userRepository.findByEmail(currentUserEmail);
+	    	Long currentUserId = tokenService.getUserIdFromToken(accessToken);
+            Optional<User> existingUser = userRepository.findById(currentUserId);
 
 	        if (existingUser.isPresent()) {
 	            User user = existingUser.get();

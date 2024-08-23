@@ -2,8 +2,6 @@ package com.example.demo.services;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 
@@ -16,89 +14,59 @@ import com.example.demo.database.entities.User;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class TokenService {
-    static Dotenv dotenv = Dotenv.load();
+	static Dotenv dotenv = Dotenv.load();
 
-    private static final String ACCESS_TOKEN_SECRET = dotenv.get("ACCESS_TOKEN_SECRET");
-    private static final String REFRESH_TOKEN_SECRET = dotenv.get("REFRESH_TOKEN_SECRET");
-    private static final String ISSUER = dotenv.get("APP_NAME");
-    private static final String AUDIENCE = dotenv.get("APP_AUDIENCE");
+	private static final String ACCESS_TOKEN_SECRET = dotenv.get("ACCESS_TOKEN_SECRET");
+	private static final String REFRESH_TOKEN_SECRET = dotenv.get("REFRESH_TOKEN_SECRET");
+	private static final String ISSUER = dotenv.get("ISSUER");
+	private static final String AUDIENCE = dotenv.get("AUDIENCE");
 
-    public String generateAccessToken(Optional<User> existingUser) {
-        User user = existingUser.orElseThrow(() -> new IllegalArgumentException("User not found"));
+	public String generateAccessToken(Optional<User> existingUser) {
+		return generateToken(existingUser, ACCESS_TOKEN_SECRET, 10 * 60); // 10 minutes
+	}
 
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", user.getId());
-        payload.put("roles", user.getRole());
-        payload.put("email", user.getEmail());
+	public String generateRefreshToken(Optional<User> existingUser) {
+		return generateToken(existingUser, REFRESH_TOKEN_SECRET, 24 * 3600); // 24 hours
+	}
 
-        Date expirationTime = getExpirationDate(10 * 60); // 10 minutes
+	private String generateToken(Optional<User> existingUser, String secret, int expirationSeconds) {
+		User user = existingUser.orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return JWT.create()
-                .withIssuer(ISSUER)
-                .withAudience(AUDIENCE)
-                .withSubject(String.valueOf(user.getId()))
-                .withPayload(payload)
-                .withExpiresAt(expirationTime)
-                .sign(Algorithm.HMAC256(ACCESS_TOKEN_SECRET));
-    }
+		Date now = new Date();
+		Date expirationTime = new Date(now.getTime() + expirationSeconds * 1000L);
 
-    public String generateRefreshToken(Optional<User> existingUser) {
-        User user = existingUser.orElseThrow(() -> new IllegalArgumentException("User not found"));
+		return JWT.create().withIssuer(ISSUER).withAudience(AUDIENCE).withSubject(String.valueOf(user.getId()))
+				.withClaim("role", user.getRole()).withIssuedAt(now).withExpiresAt(expirationTime)
+				.sign(Algorithm.HMAC256(secret));
+	}
 
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", user.getId());
-        payload.put("roles", user.getRole());
-        payload.put("email", user.getEmail());
+	public boolean verifyAccessToken(String token) {
+		return verifyToken(token, ACCESS_TOKEN_SECRET);
+	}
 
-        Date expirationTime = getExpirationDate(24 * 3600); // 24 hours
+	public boolean verifyRefreshToken(String token) {
+		return verifyToken(token, REFRESH_TOKEN_SECRET);
+	}
 
-        return JWT.create()
-                .withIssuer(ISSUER)
-                .withAudience(AUDIENCE)
-                .withSubject(String.valueOf(user.getId()))
-                .withPayload(payload)
-                .withExpiresAt(expirationTime)
-                .sign(Algorithm.HMAC256(REFRESH_TOKEN_SECRET));
-    }
+	public Long getUserIdFromToken(String token) {
+		try {
+			DecodedJWT decodedJWT = JWT.decode(token);
+			return decodedJWT.getSubject() != null ? Long.parseLong(decodedJWT.getSubject()) : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    public boolean verifyAccessToken(String token) {
-        return verifyToken(token, ACCESS_TOKEN_SECRET);
-    }
-
-    public boolean verifyRefreshToken(String token) {
-        return verifyToken(token, REFRESH_TOKEN_SECRET);
-    }
-
-    public String getUserEmailFromToken(String token) {
-        try {
-            if (verifyAccessToken(token)) {
-                DecodedJWT decodedJWT = JWT.decode(token);
-                return decodedJWT.getClaim("email").asString();
-            }
-            return null; // token ไม่ถูกต้อง
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private boolean verifyToken(String token, String secret) {
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            JWTVerifier verifier = JWT.require(algorithm)
-                .withIssuer(ISSUER)
-                .withAudience(AUDIENCE)
-                .build();
-            verifier.verify(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private Date getExpirationDate(int seconds) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.add(Calendar.SECOND, seconds);
-        return calendar.getTime();
-    }
+	private boolean verifyToken(String token, String secret) {
+		try {
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+			JWTVerifier verifier = JWT.require(algorithm).withIssuer(ISSUER).withAudience(AUDIENCE).build();
+			verifier.verify(token);
+			return true;
+		} catch (Exception e) {
+			System.err.println("Token verification failed: " + e.getMessage());
+			return false;
+		}
+	}
 }
